@@ -18,7 +18,22 @@ fn main() -> Result<()> {
         stdout(),
         cursor::MoveUp(4),
         terminal::Clear(terminal::ClearType::FromCursorDown),
-        Print("Line 4!\n")
+        // Option 1: Box with square edges and lowercase letters
+        Print("┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐\n"),
+        Print("│ w ││ o ││ r ││ d ││ l ││ e │\n"),
+        Print("└───┘└───┘└───┘└───┘└───┘└───┘\n"),
+        // Option 2: Box with square edges and uppercase letters
+        Print("┌───┐┌───┐┌───┐┌───┐┌───┐┌───┐\n"),
+        Print("│ W ││ O ││ R ││ D ││ L ││ E │\n"),
+        Print("└───┘└───┘└───┘└───┘└───┘└───┘\n"),
+        // Option 3: Box with round edges and lowercase letters
+        Print("╭───╮╭───╮╭───╮╭───╮╭───╮╭───╮\n"),
+        Print("│ w ││ o ││ r ││ d ││ l ││ e │\n"),
+        Print("╰───╯╰───╯╰───╯╰───╯╰───╯╰───╯\n"),
+        // Option 4: Box with round edges and uppercase letters
+        Print("╭───╮╭───╮╭───╮╭───╮╭───╮╭───╮\n"),
+        Print("│ W ││ O ││ R ││ D ││ L ││ E │\n"),
+        Print("╰───╯╰───╯╰───╯╰───╯╰───╯╰───╯\n"),
     )?;
 
     Ok(())
