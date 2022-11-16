@@ -50,7 +50,7 @@ mod test {
 
     #[test]
     /// Test for checking if the Letter struct is generated correctly
-    fn new_returns_correct_struct() {
+    fn constructor_works() {
         let letter_struct = Letter::new('a');
         
         assert!(letter_struct.letter() == &'a');
