@@ -1,4 +1,5 @@
 use crate::letter::Letter;
+use std::cmp::Ordering;
 
 /// Enum for possible errors
 #[derive(Debug)]
@@ -10,7 +11,7 @@ pub enum BuildErrors {
 
 /// Struct to represent a wordle guess as a word
 pub struct Word {
-    letters: Vec<Letter>
+    letters: Vec<Letter>,
 }
 
 impl Word {
@@ -19,9 +20,21 @@ impl Word {
     /// Parameters
     /// word:   The word the struct represents
     pub fn new(word: String) -> Result<Word, BuildErrors> {
+        // Checks if the word is too short or too long, returning the appropriate error if it is
+        match word.len().cmp(&5) {
+            Ordering::Greater => return Err(BuildErrors::TooLongOfWord),
+            Ordering::Less => return Err(BuildErrors::TooShortOfWord),
+            _ => (),
+        };
+
         let mut letters: Vec<Letter> = Vec::new();
 
         for letter in word.chars() {
+            // If the char is not alphabetic, return the appropriate error
+            if !letter.is_alphabetic() {
+                return Err(BuildErrors::NonAlphabeticCharcter);
+            }
+
             letters.push(Letter::new(letter));
         }
 
@@ -55,20 +68,18 @@ mod tests {
     }
 
     #[test]
-    /// Checks if the constructor catches if the user has inputted numbers and returns the correct 
+    /// Checks if the constructor catches if the user has inputted numbers and returns the correct
     /// error
     fn constructor_error_on_numbers() {
         let word_struct = Word::new(String::from("w0rds"));
 
         let correct_error;
-        
+
         match word_struct {
             Ok(_) => correct_error = false,
-            Err(err) => {
-                match err {
-                    BuildErrors::NonAlphabeticCharcter => correct_error = true,
-                    _ => correct_error = false
-                }
+            Err(err) => match err {
+                BuildErrors::NonAlphabeticCharcter => correct_error = true,
+                _ => correct_error = false,
             },
         };
 
@@ -82,14 +93,12 @@ mod tests {
         let word_struct = Word::new(String::from("w0rds"));
 
         let correct_error;
-        
+
         match word_struct {
             Ok(_) => correct_error = false,
-            Err(err) => {
-                match err {
-                    BuildErrors::NonAlphabeticCharcter => correct_error = true,
-                    _ => correct_error = false
-                }
+            Err(err) => match err {
+                BuildErrors::NonAlphabeticCharcter => correct_error = true,
+                _ => correct_error = false,
             },
         };
 
@@ -97,20 +106,18 @@ mod tests {
     }
 
     #[test]
-    /// Checks if the constructor catches if the user has inputted too many words and returns the 
+    /// Checks if the constructor catches if the user has inputted too many words and returns the
     /// correct error
     fn constructor_error_on_long_word() {
         let word_struct = Word::new(String::from("spread"));
 
         let correct_error;
-        
+
         match word_struct {
             Ok(_) => correct_error = false,
-            Err(err) => {
-                match err {
-                    BuildErrors::TooLongOfWord => correct_error = true,
-                    _ => correct_error = false
-                }
+            Err(err) => match err {
+                BuildErrors::TooLongOfWord => correct_error = true,
+                _ => correct_error = false,
             },
         };
 
@@ -118,20 +125,18 @@ mod tests {
     }
 
     #[test]
-    /// Checks if the constructor catches if the user has inputted too many words and returns the 
+    /// Checks if the constructor catches if the user has inputted too many words and returns the
     /// correct error
     fn constructor_error_on_short_word() {
         let word_struct = Word::new(String::from("tool"));
 
         let correct_error;
-        
+
         match word_struct {
             Ok(_) => correct_error = false,
-            Err(err) => {
-                match err {
-                    BuildErrors::TooShortOfWord => correct_error = true,
-                    _ => correct_error = false
-                }
+            Err(err) => match err {
+                BuildErrors::TooShortOfWord => correct_error = true,
+                _ => correct_error = false,
             },
         };
 
