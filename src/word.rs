@@ -1,5 +1,9 @@
-use crate::letter::Letter;
 use std::cmp::Ordering;
+use std::io::stdout;
+
+use crossterm::{cursor, execute, style::Print, terminal};
+
+use crate::letter::Letter;
 
 /// Enum for possible errors
 #[derive(Debug)]
@@ -39,6 +43,24 @@ impl Word {
         }
 
         Ok(Word { letters })
+    }
+
+    /// Prints the word to the console
+    pub fn print(&self) {
+        let mut display = String::new();
+
+        for i in 0..3 {
+            for letter in &self.letters {
+                display.push_str(&letter.get_row(i).unwrap());
+            }
+
+            display.push_str("\n");
+        }
+
+        execute! {
+            stdout(),
+            Print(display)
+        }.unwrap();
     }
 }
 

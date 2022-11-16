@@ -19,7 +19,7 @@ impl Letter {
         let mut rows: Vec<String> = Vec::new();
 
         rows.push(String::from("╭───╮"));
-        rows.push(format!("│ {} │", letter.clone()));
+        rows.push(format!("│ {} │", letter.to_uppercase().clone()));
         rows.push(String::from("╰───╯"));
 
         Letter { letter, rows }
