@@ -1,6 +1,10 @@
-pub enum PrintStyle {
-    Box,
-    Round,
+use colored::Colorize;
+
+/// Struct to represent what state the letter is (Right or wrong essentially)
+pub enum LetterState {
+    WrongLetterWrongPlace,
+    RightLetterWrongPlace,
+    RightLetterRightPlace,
 }
 
 /// Struct to represent a Letter in a wordle guess
@@ -34,13 +38,22 @@ impl Letter {
     ///
     /// Parameters
     /// index:    The row to get(Between 0-2)
-    pub fn get_row(&self, index: usize) -> Result<String, &'static str> {
+    pub fn get_row(&self, index: usize, state: LetterState) -> Result<String, &'static str> {
         // Returning an error if the index is greater the the num of rows to prevent a panic
         if index > self.rows.len() {
             return Err("That row does not exist!");
         }
 
-        Ok(self.rows[index].clone())
+        let mut row = self.rows[index].clone();
+
+        // Colouring the box depending on the state of the letter
+        match state {
+            LetterState::RightLetterRightPlace => row = row.bright_green().to_string(),
+            LetterState::RightLetterWrongPlace => row = row.bright_yellow().to_string(),
+            LetterState::WrongLetterWrongPlace => (),
+        }
+
+        Ok(row)
     }
 }
 
@@ -61,7 +74,7 @@ mod test {
     fn get_row_returns_right_row_one() {
         let letter_struct = Letter::new('w');
 
-        let row_one = letter_struct.get_row(0);
+        let row_one = letter_struct.get_row(0, LetterState::WrongLetterWrongPlace);
 
         assert!(row_one.unwrap() == String::from("╭───╮"))
     }
@@ -71,9 +84,9 @@ mod test {
     fn get_row_returns_right_row_two() {
         let letter_struct = Letter::new('w');
 
-        let row_one = letter_struct.get_row(1);
+        let row_one = letter_struct.get_row(1, LetterState::WrongLetterWrongPlace);
 
-        assert!(row_one.unwrap() == String::from("│ w │"))
+        assert!(row_one.unwrap() == String::from("│ W │"))
     }
 
     #[test]
@@ -81,8 +94,9 @@ mod test {
     fn get_row_returns_right_row_three() {
         let letter_struct = Letter::new('w');
 
-        let row_one = letter_struct.get_row(2);
+        let row_one = letter_struct.get_row(2, LetterState::WrongLetterWrongPlace);
 
         assert!(row_one.unwrap() == String::from("╰───╯"))
     }
+
 }

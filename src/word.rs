@@ -4,6 +4,7 @@ use std::io::stdout;
 use crossterm::{cursor, execute, style::Print, terminal};
 
 use crate::letter::Letter;
+use crate::letter::LetterState;
 
 /// Enum for possible errors
 #[derive(Debug)]
@@ -51,7 +52,7 @@ impl Word {
 
         for i in 0..3 {
             for letter in &self.letters {
-                display.push_str(&letter.get_row(i).unwrap());
+                display.push_str(&letter.get_row(i, LetterState::WrongLetterWrongPlace).unwrap());
             }
 
             display.push_str("\n");
