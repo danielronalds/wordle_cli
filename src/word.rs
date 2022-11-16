@@ -11,7 +11,13 @@ impl Word {
     /// Parameters
     /// word:   The word the struct represents
     pub fn new(word: String) -> Word {
-        Word { letters: Vec::new() }
+        let mut letters: Vec<Letter> = Vec::new();
+
+        for letter in word.chars() {
+            letters.push(Letter::new(letter));
+        }
+
+        Word { letters }
     }
 }
 
