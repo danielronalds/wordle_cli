@@ -5,6 +5,7 @@ use crate::letter::Letter;
 pub enum BuildErrors {
     NonAlphabeticCharcter,
     TooLongOfWord,
+    TooShortOfWord,
 }
 
 /// Struct to represent a wordle guess as a word
@@ -108,6 +109,27 @@ mod tests {
             Err(err) => {
                 match err {
                     BuildErrors::TooLongOfWord => correct_error = true,
+                    _ => correct_error = false
+                }
+            },
+        };
+
+        assert!(correct_error)
+    }
+
+    #[test]
+    /// Checks if the constructor catches if the user has inputted too many words and returns the 
+    /// correct error
+    fn constructor_error_on_short_word() {
+        let word_struct = Word::new(String::from("tool"));
+
+        let correct_error;
+        
+        match word_struct {
+            Ok(_) => correct_error = false,
+            Err(err) => {
+                match err {
+                    BuildErrors::TooShortOfWord => correct_error = true,
                     _ => correct_error = false
                 }
             },
