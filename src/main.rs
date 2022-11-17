@@ -6,18 +6,6 @@ use wordle_cli::word::Word;
 use crossterm::{cursor, execute, style::Print, terminal, Result};
 
 fn main() -> Result<()> {
-    // using the macro
-    execute!(
-        stdout(),
-        Print("╭───╮╭───╮╭───╮╭───╮╭───╮╭───╮\n"),
-        Print("│ W ││ O ││ R ││ D ││ L ││ E │\n"),
-        Print("╰───╯╰───╯╰───╯╰───╯╰───╯╰───╯\n"),
-        Print("\nPress any key to start"),
-    )?;
-
-    // Waiting line
-    io::stdin().read_line(&mut String::new()).unwrap();
-
     let word_to_guess = String::from("there");
 
     let word1 = Word::new(String::from("crane"), &word_to_guess).unwrap();
@@ -33,9 +21,28 @@ fn main() -> Result<()> {
         terminal::Clear(terminal::ClearType::FromCursorDown),
     )?;
 
-    for word in words {
+    for word in &words {
         word.print();
     }
 
+    if words.len() < 6 {
+        let boxes_left = 6 - words.len();
+
+        if boxes_left > 0 {
+            for _i in 0..boxes_left {
+                print_blank_boxes();
+            }
+        }
+    }
+
     Ok(())
+}
+
+fn print_blank_boxes() {
+    execute!(
+        stdout(),
+        Print("╭───╮╭───╮╭───╮╭───╮╭───╮\n"),
+        Print("│   ││   ││   ││   ││   │\n"),
+        Print("╰───╯╰───╯╰───╯╰───╯╰───╯\n"),
+    ).unwrap();
 }

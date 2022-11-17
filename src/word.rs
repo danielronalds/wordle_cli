@@ -1,7 +1,7 @@
 use std::cmp::Ordering;
 use std::io::stdout;
 
-use crossterm::{cursor, execute, style::Print, terminal};
+use crossterm::{execute, style::Print};
 
 use crate::letter::Letter;
 use crate::letter::LetterState;
