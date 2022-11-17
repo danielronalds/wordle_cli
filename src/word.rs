@@ -81,8 +81,9 @@ mod tests {
     /// word
     fn constructor_works() {
         let word = String::from("guess");
+        let right_word = String::from("guess");
 
-        let word_struct = Word::new(word.clone(), &String::new()).unwrap();
+        let word_struct = Word::new(word.clone(), &right_word).unwrap();
 
         let mut correct_word = false;
 
@@ -101,7 +102,7 @@ mod tests {
     /// Checks if the constructor catches if the user has inputted numbers and returns the correct
     /// error
     fn constructor_error_on_numbers() {
-        let word_struct = Word::new(String::from("w0rds"), &String::new());
+        let word_struct = Word::new(String::from("w0rds"), &String::from("never"));
 
         let correct_error;
 
@@ -120,7 +121,7 @@ mod tests {
     /// Checks if the constructor returns the correct error if the word passed has chacters that
     /// are not in the alphabet
     fn constructor_error_on_non_alphabetic_chars() {
-        let word_struct = Word::new(String::from("w0rds"), &String::new());
+        let word_struct = Word::new(String::from("w0rds"), &String::from("never"));
 
         let correct_error;
 
@@ -139,7 +140,7 @@ mod tests {
     /// Checks if the constructor catches if the user has inputted too many words and returns the
     /// correct error
     fn constructor_error_on_long_word() {
-        let word_struct = Word::new(String::from("spread"), &String::new());
+        let word_struct = Word::new(String::from("spread"), &String::from("never"));
 
         let correct_error;
 
@@ -158,7 +159,7 @@ mod tests {
     /// Checks if the constructor catches if the user has inputted too many words and returns the
     /// correct error
     fn constructor_error_on_short_word() {
-        let word_struct = Word::new(String::from("tool"), &String::new());
+        let word_struct = Word::new(String::from("tool"), &String::from("never"));
 
         let correct_error;
 
