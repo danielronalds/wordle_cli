@@ -6,8 +6,8 @@ use word::Word;
 use std::io::stdout;
 use crossterm::{execute, style::Print};
 
-pub fn display_game_state(guesses: Vec<Word>) {
-    for word in &guesses {
+pub fn display_game_state(guesses: &Vec<Word>) {
+    for word in guesses {
         word.print();
     }
 
