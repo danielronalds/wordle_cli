@@ -23,8 +23,9 @@ impl Word {
     /// Returns a Word Struct
     ///
     /// Parameters
-    /// word:   The word the struct represents
-    pub fn new(word: String) -> Result<Word, BuildErrors> {
+    /// word:         The word the struct represents
+    /// right_word:   The word being guessed
+    pub fn new(word: String, right_word: &String) -> Result<Word, BuildErrors> {
         // Checks if the word is too short or too long, returning the appropriate error if it is
         match word.len().cmp(&5) {
             Ordering::Greater => return Err(BuildErrors::TooLongOfWord),
@@ -34,13 +35,19 @@ impl Word {
 
         let mut letters: Vec<Letter> = Vec::new();
 
-        for letter in word.chars() {
-            // If the char is not alphabetic, return the appropriate error
-            if !letter.is_alphabetic() {
-                return Err(BuildErrors::NonAlphabeticCharcter);
-            }
+        let right_word_letters: Vec<char> = right_word.chars().collect();
+        let word_letters: Vec<char> = word.chars().collect();
 
-            letters.push(Letter::new(letter));
+        for i in 0..5 {
+            if right_word_letters[i] == word_letters[i] {
+                letters.push(Letter::new(word_letters[i], LetterState::RightLetterRightPlace));
+            }
+            else if right_word_letters.contains(&word_letters[i]) {
+                letters.push(Letter::new(word_letters[i], LetterState::RightLetterWrongPlace));
+            }
+            else {
+                letters.push(Letter::new(word_letters[i], LetterState::WrongLetterWrongPlace));
+            }
         }
 
         Ok(Word { letters })
@@ -52,7 +59,7 @@ impl Word {
 
         for i in 0..3 {
             for letter in &self.letters {
-                display.push_str(&letter.get_row(i, LetterState::WrongLetterWrongPlace).unwrap());
+                display.push_str(&letter.get_row(i).unwrap());
             }
 
             display.push_str("\n");
@@ -75,7 +82,7 @@ mod tests {
     fn constructor_works() {
         let word = String::from("guess");
 
-        let word_struct = Word::new(word.clone()).unwrap();
+        let word_struct = Word::new(word.clone(), &String::new()).unwrap();
 
         let mut correct_word = false;
 
@@ -94,7 +101,7 @@ mod tests {
     /// Checks if the constructor catches if the user has inputted numbers and returns the correct
     /// error
     fn constructor_error_on_numbers() {
-        let word_struct = Word::new(String::from("w0rds"));
+        let word_struct = Word::new(String::from("w0rds"), &String::new());
 
         let correct_error;
 
@@ -113,7 +120,7 @@ mod tests {
     /// Checks if the constructor returns the correct error if the word passed has chacters that
     /// are not in the alphabet
     fn constructor_error_on_non_alphabetic_chars() {
-        let word_struct = Word::new(String::from("w0rds"));
+        let word_struct = Word::new(String::from("w0rds"), &String::new());
 
         let correct_error;
 
@@ -132,7 +139,7 @@ mod tests {
     /// Checks if the constructor catches if the user has inputted too many words and returns the
     /// correct error
     fn constructor_error_on_long_word() {
-        let word_struct = Word::new(String::from("spread"));
+        let word_struct = Word::new(String::from("spread"), &String::new());
 
         let correct_error;
 
@@ -151,7 +158,7 @@ mod tests {
     /// Checks if the constructor catches if the user has inputted too many words and returns the
     /// correct error
     fn constructor_error_on_short_word() {
-        let word_struct = Word::new(String::from("tool"));
+        let word_struct = Word::new(String::from("tool"), &String::new());
 
         let correct_error;
 

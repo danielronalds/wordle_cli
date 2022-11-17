@@ -10,6 +10,7 @@ pub enum LetterState {
 /// Struct to represent a Letter in a wordle guess
 pub struct Letter {
     letter: char,
+    letter_state: LetterState,
     rows: Vec<String>,
 }
 
@@ -17,8 +18,9 @@ impl Letter {
     /// Returns a Letter struct
     ///
     /// Parameters
-    /// letter:   The letter the struct represents
-    pub fn new(letter: char) -> Letter {
+    /// letter:         The letter the struct represents
+    /// letter_state:   What state the letter is 
+    pub fn new(letter: char, letter_state: LetterState) -> Letter {
         // Creating the vec to store the rows of the letters
         let mut rows: Vec<String> = Vec::new();
 
@@ -26,7 +28,7 @@ impl Letter {
         rows.push(format!("│ {} │", letter.to_uppercase().clone()));
         rows.push(String::from("╰───╯"));
 
-        Letter { letter, rows }
+        Letter { letter, letter_state, rows }
     }
 
     /// Returns the char the Letter struct represents
@@ -38,7 +40,7 @@ impl Letter {
     ///
     /// Parameters
     /// index:    The row to get(Between 0-2)
-    pub fn get_row(&self, index: usize, state: LetterState) -> Result<String, &'static str> {
+    pub fn get_row(&self, index: usize) -> Result<String, &'static str> {
         // Returning an error if the index is greater the the num of rows to prevent a panic
         if index > self.rows.len() {
             return Err("That row does not exist!");
@@ -47,7 +49,7 @@ impl Letter {
         let mut row = self.rows[index].clone();
 
         // Colouring the box depending on the state of the letter
-        match state {
+        match self.letter_state {
             LetterState::RightLetterRightPlace => row = row.bright_green().to_string(),
             LetterState::RightLetterWrongPlace => row = row.bright_yellow().to_string(),
             LetterState::WrongLetterWrongPlace => (),
@@ -64,7 +66,7 @@ mod test {
     #[test]
     /// Test for checking if the Letter struct is generated correctly
     fn constructor_works() {
-        let letter_struct = Letter::new('a');
+        let letter_struct = Letter::new('a', LetterState::WrongLetterWrongPlace);
         
         assert!(letter_struct.letter() == &'a');
     }
@@ -72,9 +74,9 @@ mod test {
     #[test]
     /// Test to see if the get_row() function returns the correct row one
     fn get_row_returns_right_row_one() {
-        let letter_struct = Letter::new('w');
+        let letter_struct = Letter::new('w', LetterState::WrongLetterWrongPlace);
 
-        let row_one = letter_struct.get_row(0, LetterState::WrongLetterWrongPlace);
+        let row_one = letter_struct.get_row(0);
 
         assert!(row_one.unwrap() == String::from("╭───╮"))
     }
@@ -82,9 +84,9 @@ mod test {
     #[test]
     /// Test to see if the get_row() function returns the correct row two
     fn get_row_returns_right_row_two() {
-        let letter_struct = Letter::new('w');
+        let letter_struct = Letter::new('w', LetterState::WrongLetterWrongPlace);
 
-        let row_one = letter_struct.get_row(1, LetterState::WrongLetterWrongPlace);
+        let row_one = letter_struct.get_row(1);
 
         assert!(row_one.unwrap() == String::from("│ W │"))
     }
@@ -92,9 +94,9 @@ mod test {
     #[test]
     /// Test to see if the get_row() function returns the correct row three
     fn get_row_returns_right_row_three() {
-        let letter_struct = Letter::new('w');
+        let letter_struct = Letter::new('w', LetterState::WrongLetterWrongPlace);
 
-        let row_one = letter_struct.get_row(2, LetterState::WrongLetterWrongPlace);
+        let row_one = letter_struct.get_row(2);
 
         assert!(row_one.unwrap() == String::from("╰───╯"))
     }
