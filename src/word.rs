@@ -39,6 +39,11 @@ impl Word {
         let word_letters: Vec<char> = word.chars().collect();
 
         for i in 0..5 {
+            // Catching any non alphabetic charcters and returning the correct error
+            if !word_letters[i].is_alphabetic() {
+                return Err(BuildErrors::NonAlphabeticCharcter);
+            }
+            // Choosing the right letter state for each letter
             if right_word_letters[i] == word_letters[i] {
                 letters.push(Letter::new(word_letters[i], LetterState::RightLetterRightPlace));
             }
