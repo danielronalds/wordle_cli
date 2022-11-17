@@ -12,11 +12,12 @@ use std::path::Path;
 
 use crossterm::{cursor, execute, style::Print, terminal, Result};
 
+/// Plays the game
 pub fn play() -> Result<()> {
     let words_to_guess =
         lines_from_file("/home/danielronalds/Documents/rust/wordle_cli/wordle_words.txt")?;
 
-    let word_to_guess = random_word(words_to_guess);
+    let word_to_guess = random_word(&words_to_guess);
 
     println!("{}", &word_to_guess);
 
@@ -33,6 +34,8 @@ pub fn play() -> Result<()> {
 
         display_game_state(&guesses);
 
+        execute!(stdout(), Print("> "),)?;
+
         let mut guess = String::new();
         io::stdin()
             .read_line(&mut guess)
@@ -44,18 +47,23 @@ pub fn play() -> Result<()> {
             game_over = true;
         }
 
-        let guessed_word = Word::new(guess, &word_to_guess);
+        let guessed_word = Word::new(guess, &word_to_guess, &words_to_guess);
 
         match guessed_word {
             Ok(word) => guesses.push(word),
             Err(err) => {
                 match err {
-                    BuildErrors::TooLongOfWord => println!("Words cannot be longer than 5 letters"),
+                    BuildErrors::TooLongOfWord => {
+                        println!("Words cannot be longer than 5 letters!")
+                    }
                     BuildErrors::TooShortOfWord => {
-                        println!("Words cannot be shorter than 5 letters")
+                        println!("Words cannot be shorter than 5 letters!")
                     }
                     BuildErrors::NonAlphabeticCharcter => {
                         println!("Words can only contain alphabetic characters!")
+                    }
+                    BuildErrors::NonValidWord => {
+                        println!("That is not a valid guess!")
                     }
                 }
 
@@ -116,7 +124,7 @@ fn lines_from_file(filename: impl AsRef<Path>) -> io::Result<Vec<String>> {
     BufReader::new(File::open(filename)?).lines().collect()
 }
 
-fn random_word(word_list: Vec<String>) -> String {
+fn random_word(word_list: &Vec<String>) -> String {
     let random_index: usize = rand::thread_rng().gen_range(0..word_list.len());
 
     word_list[random_index].clone()
@@ -146,8 +154,8 @@ mod tests {
             String::from("askdl"),
             String::from("fyudi"),
         ];
-        let word_one = random_word(word_list.clone());
-        let word_two = random_word(word_list);
+        let word_one = random_word(&word_list);
+        let word_two = random_word(&word_list);
 
         assert!(!(word_one == word_two))
     }
