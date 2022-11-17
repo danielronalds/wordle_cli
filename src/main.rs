@@ -2,6 +2,7 @@ use std::io;
 use std::io::stdout;
 
 use wordle_cli::word::Word;
+use wordle_cli;
 
 use crossterm::{cursor, execute, style::Print, terminal, Result};
 
@@ -21,28 +22,8 @@ fn main() -> Result<()> {
         terminal::Clear(terminal::ClearType::FromCursorDown),
     )?;
 
-    for word in &words {
-        word.print();
-    }
-
-    if words.len() < 6 {
-        let boxes_left = 6 - words.len();
-
-        if boxes_left > 0 {
-            for _i in 0..boxes_left {
-                print_blank_boxes();
-            }
-        }
-    }
+    wordle_cli::display_game_state(words);
 
     Ok(())
 }
 
-fn print_blank_boxes() {
-    execute!(
-        stdout(),
-        Print("╭───╮╭───╮╭───╮╭───╮╭───╮\n"),
-        Print("│   ││   ││   ││   ││   │\n"),
-        Print("╰───╯╰───╯╰───╯╰───╯╰───╯\n"),
-    ).unwrap();
-}
