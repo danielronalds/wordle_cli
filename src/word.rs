@@ -36,16 +36,16 @@ impl Word {
             _ => (),
         };
 
+        if !words.contains(&word) {
+            return Err(BuildErrors::NonValidWord);
+        }
+
         let mut letters: Vec<Letter> = Vec::new();
 
         let right_word_letters: Vec<char> = right_word.chars().collect();
         let word_letters: Vec<char> = word.chars().collect();
 
         for i in 0..5 {
-            // Catching any non alphabetic charcters and returning the correct error
-            if !word_letters[i].is_alphabetic() {
-                return Err(BuildErrors::NonAlphabeticCharcter);
-            }
             // Choosing the right letter state for each letter
             if right_word_letters[i] == word_letters[i] {
                 letters.push(Letter::new(
@@ -120,58 +120,6 @@ mod tests {
         }
 
         assert!(correct_word);
-    }
-
-    #[test]
-    /// Checks if the constructor catches if the user has inputted numbers and returns the correct
-    /// error
-    fn constructor_error_on_numbers() {
-        // Wordlist to guess from
-        let word_list = vec![
-            String::from("crane"),
-            String::from("guess"),
-            String::from("juice"),
-            String::from("spree"),
-        ];
-        let word_struct = Word::new(String::from("w0rds"), &String::from("never"), &word_list);
-
-        let correct_error;
-
-        match word_struct {
-            Ok(_) => correct_error = false,
-            Err(err) => match err {
-                BuildErrors::NonAlphabeticCharcter => correct_error = true,
-                _ => correct_error = false,
-            },
-        };
-
-        assert!(correct_error)
-    }
-
-    #[test]
-    /// Checks if the constructor returns the correct error if the word passed has chacters that
-    /// are not in the alphabet
-    fn constructor_error_on_non_alphabetic_chars() {
-        let word_list = vec![
-            String::from("crane"),
-            String::from("guess"),
-            String::from("juice"),
-            String::from("spree"),
-        ];
-
-        let word_struct = Word::new(String::from("w0rds"), &String::from("never"), &word_list);
-
-        let correct_error;
-
-        match word_struct {
-            Ok(_) => correct_error = false,
-            Err(err) => match err {
-                BuildErrors::NonAlphabeticCharcter => correct_error = true,
-                _ => correct_error = false,
-            },
-        };
-
-        assert!(correct_error)
     }
 
     #[test]
