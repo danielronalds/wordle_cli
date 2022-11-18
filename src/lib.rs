@@ -13,9 +13,9 @@ use std::path::Path;
 use crossterm::{cursor, execute, style::Print, terminal, Result};
 
 /// Plays the game
-pub fn play() -> Result<()> {
+pub fn play(file_path: String) -> Result<()> {
     let words_to_guess =
-        lines_from_file("/home/danielronalds/Documents/rust/wordle_cli/sgb-words.txt")?;
+        lines_from_file(file_path)?;
 
     let word_to_guess = random_word(&words_to_guess);
 
