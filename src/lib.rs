@@ -5,6 +5,7 @@ use word::BuildErrors;
 use word::Word;
 
 use rand::Rng;
+
 use std::fs::File;
 use std::io::stdout;
 use std::io::{self, BufRead, BufReader};
@@ -13,42 +14,56 @@ use std::path::Path;
 use crossterm::{cursor, execute, style::Print, terminal, Result};
 
 /// Plays the game
-pub fn play(file_path: String) -> Result<()> {
-    let words_to_guess =
-        lines_from_file(file_path)?;
+///
+/// Parameters
+/// wordfile:  The path to the word file to choose the random word from
+pub fn play(wordfile: String) -> Result<()> {
+    // Getting the list of words to choose from out of the file supplied
+    let words_to_guess = lines_from_file(wordfile)?;
 
+    // Choosing a random word
     let word_to_guess = random_word(&words_to_guess);
 
+    // Printing out the word for testing purposes
     println!("{}", &word_to_guess);
 
+    // Instantiating a vec to store the players guesses
     let mut guesses: Vec<Word> = Vec::new();
 
     let mut game_over = false;
 
     while !game_over {
+        // Clearing the screen from the cursor down. We don't move the cursor here as if we do it
+        // here the program would wipe lines above the cli game being player
         execute!(
             stdout(),
             terminal::Clear(terminal::ClearType::FromCursorDown)
         )
-        .unwrap();
+        .unwrap(); // This is probably unsafe...
 
+        // Displaying the word grid to the console
         display_game_state(&guesses);
 
+        // Prompt for the user to type their guess
         execute!(stdout(), Print("> "),)?;
 
+        // Getting the users input from the player and trimming it
         let mut guess = String::new();
         io::stdin()
             .read_line(&mut guess)
             .expect("Could not read the line");
-
         let guess = guess.trim().to_string();
 
+        // If the player guessed the word, then the game is over
         if guess == word_to_guess {
             game_over = true;
         }
 
+        // Creating a Word struct to store the players guess
         let guessed_word = Word::new(guess, &word_to_guess, &words_to_guess);
 
+        // Adding the gussed word to the guesses vec if it was created successfully, otherwise
+        // printing an appropriate error message for the player
         match guessed_word {
             Ok(word) => guesses.push(word),
             Err(err) => {
@@ -67,15 +82,20 @@ pub fn play(file_path: String) -> Result<()> {
                     }
                 }
 
+                // Pausing for the player to be able to read the message
                 io::stdin()
                     .read_line(&mut String::new())
                     .expect("Could not read the line");
+                // Moves the cursor up the two lines just created
                 execute!(stdout(), cursor::MoveUp(2))?;
             }
         }
 
+        // Moving the cursor now in preparition for the clearing of the screen on the next loop
         execute!(stdout(), cursor::MoveUp(19))?;
 
+        // If the game is over, then the loop ends and the user wont see the word grid with their
+        // correct guess, so we print it here
         if game_over {
             execute!(
                 stdout(),
@@ -90,6 +110,10 @@ pub fn play(file_path: String) -> Result<()> {
     Ok(())
 }
 
+/// Prints the current word grid to the console
+///
+/// Parameters
+/// guesses:    The Vec containg the players guesses
 pub fn display_game_state(guesses: &Vec<Word>) {
     for word in guesses {
         word.print();
@@ -106,6 +130,7 @@ pub fn display_game_state(guesses: &Vec<Word>) {
     }
 }
 
+/// Prints a blank word to the console, used so that there is always a 5x6 grid on the screen
 fn print_blank_boxes() {
     execute!(
         stdout(),
@@ -124,6 +149,10 @@ fn lines_from_file(filename: impl AsRef<Path>) -> io::Result<Vec<String>> {
     BufReader::new(File::open(filename)?).lines().collect()
 }
 
+/// Chooses a random word
+///
+/// Parameters
+/// word_list:  The vec of String to choose a word from
 fn random_word(word_list: &Vec<String>) -> String {
     let random_index: usize = rand::thread_rng().gen_range(0..word_list.len());
 
