@@ -13,6 +13,10 @@ use std::path::Path;
 
 use crossterm::{cursor, execute, style::Print, terminal, Result};
 
+use colored::Colorize;
+
+const MAX_GUESSES: usize = 6;
+
 /// Plays the game
 ///
 /// Parameters
@@ -25,7 +29,7 @@ pub fn play(wordfile: String) -> Result<()> {
     let word_to_guess = random_word(&words_to_guess);
 
     // Printing out the word for testing purposes
-    println!("{}", &word_to_guess);
+    //println!("{}", &word_to_guess);
 
     // Instantiating a vec to store the players guesses
     let mut guesses: Vec<Word> = Vec::new();
@@ -94,6 +98,11 @@ pub fn play(wordfile: String) -> Result<()> {
         // Moving the cursor now in preparition for the clearing of the screen on the next loop
         execute!(stdout(), cursor::MoveUp(19))?;
 
+        // If the player has had more than the max guesses then the game is also over
+        if guesses.len() >= MAX_GUESSES {
+            game_over = true;
+        }
+
         // If the game is over, then the loop ends and the user wont see the word grid with their
         // correct guess, so we print it here
         if game_over {
@@ -104,6 +113,8 @@ pub fn play(wordfile: String) -> Result<()> {
             .unwrap();
 
             display_game_state(&guesses);
+
+            println!("The word was {}", word_to_guess.bold());
         }
     }
 
@@ -119,8 +130,8 @@ pub fn display_game_state(guesses: &Vec<Word>) {
         word.print();
     }
 
-    if guesses.len() < 6 {
-        let boxes_left = 6 - guesses.len();
+    if guesses.len() < MAX_GUESSES {
+        let boxes_left = MAX_GUESSES - guesses.len();
 
         if boxes_left > 0 {
             for _i in 0..boxes_left {
