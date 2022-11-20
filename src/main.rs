@@ -1,5 +1,3 @@
-use std::io::Result;
-
 use clap::Parser;
 
 use wordle_cli;
@@ -11,7 +9,7 @@ struct Args {
     file_path: String, 
 }
 
-fn main() -> Result<()>  {
+fn main() -> Result<(), wordle_cli::Errors>  {
     let args = Args::parse();
 
     wordle_cli::play(args.file_path)?;

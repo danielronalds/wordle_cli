@@ -11,17 +11,24 @@ use std::io::stdout;
 use std::io::{self, BufRead, BufReader};
 use std::path::Path;
 
-use crossterm::{cursor, execute, style::Print, terminal, Result};
+use crossterm::{cursor, execute, style::Print, terminal};
 
 use colored::Colorize;
 
 const MAX_GUESSES: usize = 6;
 
+/// Enum for possible errors
+#[derive(Debug)]
+pub enum Errors {
+    FailedToOpenFile,
+    FailedToPrint,
+}
+
 /// Plays the game
 ///
 /// Parameters
 /// wordfile:  The path to the word file to choose the random word from
-pub fn play(wordfile: String) -> Result<()> {
+pub fn play(wordfile: String) -> Result<(), Errors> {
     // Getting the list of words to choose from out of the file supplied
     let words_to_guess = lines_from_file(wordfile)?;
 
@@ -49,7 +56,7 @@ pub fn play(wordfile: String) -> Result<()> {
         display_game_state(&guesses);
 
         // Prompt for the user to type their guess
-        execute!(stdout(), Print("> "),)?;
+        execute!(stdout(), Print("> "),);
 
         // Getting the users input from the player and trimming it
         let mut guess = String::new();
@@ -91,12 +98,12 @@ pub fn play(wordfile: String) -> Result<()> {
                     .read_line(&mut String::new())
                     .expect("Could not read the line");
                 // Moves the cursor up the two lines just created
-                execute!(stdout(), cursor::MoveUp(2))?;
+                execute!(stdout(), cursor::MoveUp(2));
             }
         }
 
         // Moving the cursor now in preparition for the clearing of the screen on the next loop
-        execute!(stdout(), cursor::MoveUp(19))?;
+        execute!(stdout(), cursor::MoveUp(19));
 
         // If the player has had more than the max guesses then the game is also over
         if guesses.len() >= MAX_GUESSES {
@@ -156,8 +163,23 @@ fn print_blank_boxes() {
 ///
 /// Parameters:
 /// filename:   The path of the filename
-fn lines_from_file(filename: impl AsRef<Path>) -> io::Result<Vec<String>> {
-    BufReader::new(File::open(filename)?).lines().collect()
+fn lines_from_file(filename: impl AsRef<Path>) -> Result<Vec<String>, Errors> {
+    let file = match File::open(filename)  {
+        Ok(file) => file,
+        Err(_) => return Err(Errors::FailedToOpenFile),
+    };
+
+    let mut lines: Vec<String> = Vec::new();
+
+    for line in BufReader::new(file).lines() {
+        match line {
+            Ok(line) => lines.push(line),
+            Err(_) => continue,
+        }
+    }
+
+
+    Ok(lines)
 }
 
 /// Chooses a random word
