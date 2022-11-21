@@ -21,6 +21,7 @@ const MAX_GUESSES: usize = 6;
 #[derive(Debug)]
 pub enum Errors {
     FailedToOpenFile,
+    NoWordsInFile,
     FailedToPrint,
 }
 
@@ -48,6 +49,7 @@ pub fn play(wordfile: String) -> Result<(), Errors> {
         // here the program would wipe lines above the cli game being player
         execute!(
             stdout(),
+            cursor::SavePosition,
             terminal::Clear(terminal::ClearType::FromCursorDown)
         )
         .unwrap(); // This is probably unsafe...
@@ -56,7 +58,7 @@ pub fn play(wordfile: String) -> Result<(), Errors> {
         display_game_state(&guesses);
 
         // Prompt for the user to type their guess
-        execute!(stdout(), Print("> "),);
+        execute!(stdout(), Print("> "),).unwrap();
 
         // Getting the users input from the player and trimming it
         let mut guess = String::new();
@@ -97,13 +99,11 @@ pub fn play(wordfile: String) -> Result<(), Errors> {
                 io::stdin()
                     .read_line(&mut String::new())
                     .expect("Could not read the line");
-                // Moves the cursor up the two lines just created
-                execute!(stdout(), cursor::MoveUp(2));
             }
         }
 
-        // Moving the cursor now in preparition for the clearing of the screen on the next loop
-        execute!(stdout(), cursor::MoveUp(19));
+        // Move the cursor back to the saved position in prep for clearing the screen
+        execute!(stdout(), cursor::RestorePosition).unwrap();
 
         // If the player has had more than the max guesses then the game is also over
         if guesses.len() >= MAX_GUESSES {
@@ -164,7 +164,7 @@ fn print_blank_boxes() {
 /// Parameters:
 /// filename:   The path of the filename
 fn lines_from_file(filename: impl AsRef<Path>) -> Result<Vec<String>, Errors> {
-    let file = match File::open(filename)  {
+    let file = match File::open(filename) {
         Ok(file) => file,
         Err(_) => return Err(Errors::FailedToOpenFile),
     };
@@ -178,6 +178,9 @@ fn lines_from_file(filename: impl AsRef<Path>) -> Result<Vec<String>, Errors> {
         }
     }
 
+    if lines.len() < 1 {
+        return Err(Errors::NoWordsInFile);
+    }
 
     Ok(lines)
 }
