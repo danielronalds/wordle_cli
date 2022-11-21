@@ -22,7 +22,6 @@ const MAX_GUESSES: usize = 6;
 pub enum Errors {
     FailedToOpenFile,
     NoWordsInFile,
-    FailedToPrint,
 }
 
 /// Plays the game
