@@ -177,7 +177,7 @@ fn lines_from_file(filename: impl AsRef<Path>) -> Result<Vec<String>, Errors> {
         }
     }
 
-    if lines.len() < 1 {
+    if lines.is_empty() {
         return Err(Errors::NoWordsInFile);
     }
 

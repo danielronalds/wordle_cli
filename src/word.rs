@@ -28,7 +28,7 @@ impl Word {
     /// right_word:   The word being guessed
     /// words:        The wordlist the player is guessing from. Userd to check if the guess is a 
     ///               valid word
-    pub fn new(word: String, right_word: &String, words: &Vec<String>) -> Result<Word, BuildErrors> {
+    pub fn new(word: String, right_word: &str, words: &[String]) -> Result<Word, BuildErrors> {
         // Checks if the word is too short or too long, returning the appropriate error if it is
         match word.len().cmp(&5) {
             Ordering::Greater => return Err(BuildErrors::TooLongOfWord),
@@ -77,7 +77,7 @@ impl Word {
                 display.push_str(&letter.get_row(i).unwrap());
             }
 
-            display.push_str("\n");
+            display.push('\n');
         }
 
         execute! {

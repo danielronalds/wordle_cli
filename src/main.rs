@@ -1,6 +1,5 @@
 use clap::Parser;
 
-use wordle_cli;
 use wordle_cli::Errors;
 
 /// Play wordle in your terminal!
