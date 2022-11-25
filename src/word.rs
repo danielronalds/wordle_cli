@@ -26,7 +26,7 @@ impl Word {
     /// Parameters
     /// word:         The word the struct represents
     /// right_word:   The word being guessed
-    /// words:        The wordlist the player is guessing from. Userd to check if the guess is a 
+    /// words:        The wordlist the player is guessing from. Userd to check if the guess is a
     ///               valid word
     pub fn new(word: String, right_word: &str, words: &[String]) -> Result<Word, BuildErrors> {
         // Checks if the word is too short or too long, returning the appropriate error if it is
@@ -40,29 +40,68 @@ impl Word {
             return Err(BuildErrors::NonValidWord);
         }
 
+        let right_word_letters: Vec<char> = right_word.chars().collect();
+
         let mut letters: Vec<Letter> = Vec::new();
 
-        let right_word_letters: Vec<char> = right_word.chars().collect();
-        let word_letters: Vec<char> = word.chars().collect();
+        let mut word_array: [Option<char>; 5] = [None; 5];
+        let mut right_word_array: [Option<char>; 5] = [None; 5];
+        let mut letter_array: [Option<Letter>; 5] = [None, None, None, None, None];
 
+        // Collecting the submitted word into an array
         for i in 0..5 {
-            // Choosing the right letter state for each letter
-            if right_word_letters[i] == word_letters[i] {
-                letters.push(Letter::new(
-                    word_letters[i],
+            word_array[i] = word.chars().nth(i);
+        }
+        for i in 0..5 {
+            right_word_array[i] = right_word.chars().nth(i);
+        }
+
+        // Adding the correct letters and setting them to none in the base word array
+        for i in 0..5 {
+            if word_array[i] == Some(right_word_letters[i]) {
+                letter_array[i] = Some(Letter::new(
+                    right_word_letters[i],
                     LetterState::RightLetterRightPlace,
                 ));
-            } else if right_word_letters.contains(&word_letters[i]) {
-                letters.push(Letter::new(
-                    word_letters[i],
-                    LetterState::RightLetterWrongPlace,
-                ));
-            } else {
-                letters.push(Letter::new(
-                    word_letters[i],
-                    LetterState::WrongLetterWrongPlace,
-                ));
+
+                word_array[i] = None;
+                right_word_array[i] = None;
             }
+        }
+
+        // Adding the right word wrong place letters
+        for i in 0..5 {
+            match word_array[i] {
+                Some(letter) => {
+                    if right_word_array.contains(&Some(letter)) {
+                        letter_array[i] = Some(Letter::new(
+                            letter.clone(),
+                            LetterState::RightLetterWrongPlace,
+                        ));
+                        word_array[i] = None;
+                        let index_to_remove = right_word_array
+                            .iter()
+                            .position(|&r| r == Some(letter))
+                            .unwrap();
+                        right_word_array[index_to_remove] = None;
+                    }
+                }
+                None => continue,
+            }
+        }
+
+        // Adding the rest of the letters
+        for i in 0..5 {
+            match word_array[i] {
+                Some(letter) => {
+                    letter_array[i] = Some(Letter::new(letter, LetterState::WrongLetterWrongPlace));
+                }
+                None => continue,
+            };
+        }
+
+        for letter in letter_array {
+            letters.push(letter.unwrap());
         }
 
         Ok(Word { letters })

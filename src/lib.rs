@@ -36,7 +36,7 @@ pub fn play(wordfile: String) -> Result<(), Errors> {
     let word_to_guess = random_word(&words_to_guess);
 
     // Printing out the word for testing purposes
-    //println!("{}", &word_to_guess);
+    println!("{}", &word_to_guess);
 
     // Instantiating a vec to store the players guesses
     let mut guesses: Vec<Word> = Vec::new();
