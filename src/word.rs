@@ -56,7 +56,7 @@ impl Word {
             right_word_array[i] = right_word.chars().nth(i);
         }
 
-        // Adding the correct letters and setting them to none in the base word array
+        // Adding the right word wrong place letters 
         for i in 0..5 {
             if word_array[i] == Some(right_word_letters[i]) {
                 letter_array[i] = Some(Letter::new(
@@ -64,6 +64,8 @@ impl Word {
                     LetterState::RightLetterRightPlace,
                 ));
 
+                // Removing the correct letter from the arrays so that it cant be used again to
+                // in the 'contains' check
                 word_array[i] = None;
                 right_word_array[i] = None;
             }
@@ -74,11 +76,15 @@ impl Word {
             match word_array[i] {
                 Some(letter) => {
                     if right_word_array.contains(&Some(letter)) {
-                        letter_array[i] = Some(Letter::new(
-                            letter.clone(),
-                            LetterState::RightLetterWrongPlace,
-                        ));
+                        letter_array[i] =
+                            Some(Letter::new(letter, LetterState::RightLetterWrongPlace));
+
+                        // Removing the letter char from the word array
                         word_array[i] = None;
+
+                        // Removing the letter that triggered the contains, so that if there are
+                        // more than one of the same letter they don't both show up yellow if there
+                        // is only one of that letter in the word
                         let index_to_remove = right_word_array
                             .iter()
                             .position(|&r| r == Some(letter))
