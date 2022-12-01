@@ -48,7 +48,6 @@ pub fn play(wordfile: String) -> Result<(), Errors> {
         // here the program would wipe lines above the cli game being player
         execute!(
             stdout(),
-            cursor::SavePosition,
             terminal::Clear(terminal::ClearType::FromCursorDown)
         )
         .unwrap(); // This is probably unsafe...
@@ -98,11 +97,13 @@ pub fn play(wordfile: String) -> Result<(), Errors> {
                 io::stdin()
                     .read_line(&mut String::new())
                     .expect("Could not read the line");
+                // Moves the cursor back the lines we just created
+                execute!(stdout(), cursor::MoveUp(2)).unwrap();
             }
         }
 
         // Move the cursor back to the saved position in prep for clearing the screen
-        execute!(stdout(), cursor::RestorePosition).unwrap();
+        execute!(stdout(), cursor::MoveUp(19)).unwrap();
 
         // If the player has had more than the max guesses then the game is also over
         if guesses.len() >= MAX_GUESSES {
