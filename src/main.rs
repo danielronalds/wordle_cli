@@ -14,12 +14,9 @@ fn main() {
 
     match wordle_cli::play(args.file_path) {
         Ok(_) => (),
-        Err(err) => {
-            match err {
-                Errors::NoWordsInFile => println!("No words were found in the file you selected!"),
-                Errors::FailedToOpenFile => println!("Could not open the file you selected!"),
-            }
-            std::process::exit(1);
-        }
+        Err(err) => match err {
+            Errors::NoWordsInFile => println!("No words were found in the file you selected!"),
+            Errors::FailedToOpenFile => println!("Could not open the file you selected!"),
+        },
     };
 }
