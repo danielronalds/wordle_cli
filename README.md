@@ -1,6 +1,8 @@
 # Wordle CLI
 
-A recreation of the popular online puzzle wordle for your terminal!
+A recreation of the popular online puzzle Wordle for your terminal!
+
+![](gamedemo.png)
 
 ## Install
 
