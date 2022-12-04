@@ -12,6 +12,8 @@ cd wordle_cli
 cargo install --path ./
 ```
 
+Only tested on Fedora 37 Workstation Edition
+
 ## How to play
 
 Before playing a game you will need a wordlist for wordle_cli to use. In this repo there are two 
