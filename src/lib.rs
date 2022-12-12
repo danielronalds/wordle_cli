@@ -27,8 +27,9 @@ pub enum Errors {
 /// Plays the game
 ///
 /// Parameters
-/// wordfile:  The path to the word file to choose the random word from
-pub fn play(wordfile: String) -> Result<(), Errors> {
+/// wordfile:    The path to the word file to choose the random word from
+/// show_word:   Whether to print the word to guess
+pub fn play(wordfile: String, show_word: bool) -> Result<(), Errors> {
     // Getting the list of words to choose from out of the file supplied
     let words_to_guess = lines_from_file(wordfile)?;
 
@@ -36,7 +37,9 @@ pub fn play(wordfile: String) -> Result<(), Errors> {
     let word_to_guess = random_word(&words_to_guess);
 
     // Printing out the word for testing purposes
-    //println!("{}", &word_to_guess);
+    if show_word {
+        println!("{}", &word_to_guess.bold());
+    }
 
     // Instantiating a vec to store the players guesses
     let mut guesses: Vec<Word> = Vec::new();
