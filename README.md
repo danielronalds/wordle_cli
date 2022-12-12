@@ -21,3 +21,6 @@ which you can use. After installing run `wordle_cli <PATH_TO_WORDLIST>` and a ra
 selected. Valid guesses include any word from the wordlist provided, and guesses and words in the 
 wordlist must be 5 letters long!
 
+### Displaying the word to guesses
+
+Running wordle_cli with the `--show-word` flag will print the word to guess above the game grid
