@@ -1,8 +1,11 @@
 pub mod letter;
 pub mod word;
+pub mod wordlist;
 
 use word::BuildErrors;
 use word::Word;
+
+use wordlist::DEFAULT_WORDS;
 
 use rand::Rng;
 
@@ -29,9 +32,12 @@ pub enum Errors {
 /// Parameters
 /// wordfile:    The path to the word file to choose the random word from
 /// show_word:   Whether to print the word to guess
-pub fn play(wordfile: String, show_word: bool) -> Result<(), Errors> {
+pub fn play(wordfile: Option<String>, show_word: bool) -> Result<(), Errors> {
     // Getting the list of words to choose from out of the file supplied
-    let words_to_guess = lines_from_file(wordfile)?;
+    let words_to_guess = match wordfile {
+        Some(file) => lines_from_file(file)?,
+        None => DEFAULT_WORDS.iter().map(|x| x.to_string()).collect(),
+    };
 
     // Choosing a random word
     let word_to_guess = random_word(&words_to_guess);

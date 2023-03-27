@@ -7,7 +7,7 @@ use wordle_cli::Errors;
 #[clap(author, version, about)]
 pub struct Args {
     /// The text file containg the word list to use
-    file_path: String,
+    file_path: Option<String>,
 
     #[arg(long)]
     /// Whether to show the word to guess or not
